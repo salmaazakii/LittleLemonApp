@@ -1,5 +1,6 @@
 import {View,Image,TextInput,Pressable,Text} from 'react-native'
 import LinearGradient from 'react-native-linear-gradient';
+import {setUserSetupCompleted} from '../src/Config'
 
 function Header(){
     return(
@@ -19,7 +20,10 @@ export default function Onboarding(){
                 <Text style={{fontFamily:'Karla-Regular',fontSize:16,marginTop:20}}>Email</Text>
                 <TextInput style={{borderRadius:10,borderWidth:1,width:'100%'}}></TextInput>
             </View>
-            <Pressable style={{marginTop:20,width:'25%',height:50,backgroundColor:'#495E57',borderRadius:10,alignItems:'center',justifyContent:'center'}}>
+            <Pressable 
+                style={{marginTop:20,width:'25%',height:50,backgroundColor:'#495E57',borderRadius:10,alignItems:'center',justifyContent:'center'}}
+                onPress={async ()=> await setUserSetupCompleted()}    
+            >
                 <Text style={{color:'white',fontSize:18}}>Next</Text>
             </Pressable>
         </LinearGradient>
