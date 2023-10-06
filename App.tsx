@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import Onboarding from './screens/Onboarding';
 import { NavigationContainer } from '@react-navigation/native';
@@ -45,10 +46,16 @@ class App extends React.Component {
                 name={'Profile'}
                 component={Profile}
               />
-            : <Stack.Screen 
+            : <>
+              <Stack.Screen 
                 name={'Onboarding'}
                 component={Onboarding}
               />
+              <Stack.Screen 
+                name={'Profile'}
+                component={Profile}
+              />
+              </>
           }
         </Stack.Navigator>
       }
