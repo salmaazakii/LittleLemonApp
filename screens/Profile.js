@@ -13,12 +13,20 @@ function UserProfileIcon(props){
     );
 }
 
-export default function Profile(){
+export default function Profile({navigation}){
     return (
         <LinearGradient colors={['#f5e7ae','#faf8f2']} style={{flex:1, alignItems:'center'}}>
             <View style={{width:'100%',height:'10%',flexDirection:'row',alignItems:'center',justifyContent:'space-around'}}>
                 <View style={{width:40,height:40,borderRadius:20,backgroundColor:'white',alignItems:'center',justifyContent:'center'}}>
-                    <FontAwesomeIcon icon={faArrowLeft} color='#495E57' size={26}/>
+                    <Pressable onPress={() => {
+                        try{
+                            navigation.pop()
+                        } catch(e) {
+                            console.log('Could not navigate back from profile screen, due to:', e)
+                        }
+                    }}>
+                        <FontAwesomeIcon icon={faArrowLeft} color='#495E57' size={26}/>
+                    </Pressable>
                 </View>
                 <View style={{width:'70%',alignItems:'center'}}>
                     <Image source={require('../assets/images/Logo.png')}/>
