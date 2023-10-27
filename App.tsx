@@ -6,6 +6,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import SplashScreen from './screens/SplashScreen';
 import Profile from './screens/Profile';
 import { IsUserSetupCompleted } from './src/Config';
+import Home from './screens/Home';
 
 const Stack = createNativeStackNavigator();
 class App extends React.Component {
@@ -42,20 +43,11 @@ class App extends React.Component {
         <Stack.Navigator screenOptions={{headerShown:false}}>
           {
             this.state.isOnboardingCompleted
-            ? <Stack.Screen 
-                name={'Profile'}
-                component={Profile}
-              />
-            : <>
-              <Stack.Screen 
-                name={'Onboarding'}
-                component={Onboarding}
-              />
-              <Stack.Screen 
-                name={'Profile'}
-                component={Profile}
-              />
-              </>
+            ? <>
+            <Stack.Screen name={'Home'} component={Home} />
+            <Stack.Screen name={'Profile'} component={Profile} />
+            </>
+            : <Stack.Screen name={'Onboarding'} component={Onboarding} />
           }
         </Stack.Navigator>
       }

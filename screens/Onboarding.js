@@ -1,6 +1,7 @@
 import {View,Image,TextInput,Pressable,Text} from 'react-native'
 import LinearGradient from 'react-native-linear-gradient';
 import { useState } from 'react';
+import {setUserSetupCompleted} from '../src/Config'
 
 function Header(){
     return(
@@ -27,7 +28,10 @@ export default function Onboarding({navigation}){
                 disabled ={(firstName != '' && email != ''? false : true)}
                 style={[{marginTop:20,width:'25%',height:50,borderRadius:10,alignItems:'center',justifyContent:'center'}
                 ,{backgroundColor: '#495E57'}]}
-                onPress={()=>navigation.navigate('Profile',{firstName,email})}
+                onPress={async ()=>{
+                    await setUserSetupCompleted()
+                    navigation.navigate('Profile',{firstName,email})
+                }}
             >
                 <Text style={{color:'white',fontSize:18}}>Next</Text>
             </Pressable>

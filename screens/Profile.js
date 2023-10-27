@@ -6,7 +6,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft'
 import CheckBox from '@react-native-community/checkbox';
 import { MaskedTextInput } from "react-native-mask-text";
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {setProfileData, setUserSetupCompleted} from '../src/Config'
+import {setProfileData, GetProfileData} from '../src/Config'
 
 function UserProfileIcon(props){
     return(
@@ -17,15 +17,29 @@ function UserProfileIcon(props){
 }
 
 export default function Profile({route,navigation}){
-
-    const [firstName, setFirstName] = useState(route.params.firstName)
+    const [firstName, setFirstName] = useState(String(route.params?.firstName) | '')
     const [lastName, setLastName] = useState('')
-    const [email, setEmail] = useState(route.params.email)
+    const [email, setEmail] = useState(String(route.params?.email) | '')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [IsOrderStatusEnabled, setOrderStatus] = useState(true)
     const [IsPasswordChangesEnabled, setPasswordChanges] = useState(true)
     const [IsSpecialOffersEnabled, setSpecialOffers] = useState(true)
     const [IsNewsletterEnabled, setNewsletter] = useState(true)
+
+    GetProfileData()
+    .then(result => {
+        if(result !== null){
+            setFirstName(result.firstName)
+            setLastName(result.lastName)
+            setEmail(result.email)
+            setPhoneNumber(result.phoneNumber)
+            setOrderStatus(result.IsOrderStatusEnabled)
+            setPasswordChanges(result.IsPasswordChangesEnabled)
+            setSpecialOffers(result.IsSpecialOffersEnabled)
+            setNewsletter(result.IsNewsletterEnabled)
+        }
+    })
+
     
     async function  PickImage() {
         const result = await launchImageLibrary();
@@ -89,7 +103,6 @@ export default function Profile({route,navigation}){
                 <View style={{marginVertical:10,width:'100%',alignItems:'center'}}>
                     <Pressable style={{width:'80%',height:45,backgroundColor:'#F4CE14',alignItems:'center',justifyContent:'center',borderRadius:10}}
                         onPress={async () => {
-                            await setUserSetupCompleted()
                             await setProfileData({
                                 firstName
                                 , lastName
