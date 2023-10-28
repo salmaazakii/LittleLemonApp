@@ -1,5 +1,6 @@
 import SQLite from 'react-native-sqlite-storage';
 
+SQLite.DEBUG(true)
 var db : SQLite.SQLiteDatabase;
 export const openDatabase = () => {
     db = SQLite.openDatabase(
@@ -16,17 +17,19 @@ export const openDatabase = () => {
 }
 
 export const closeDatabase = () => {
-  try{
+  try {
     db.close()
-  } catch(error){
-    console.log(error)
+  } catch(ex){
+    console.log(JSON.stringify(ex))
   }
 }
 
-export function fetchMenufromDB(): Promise<any[]> {
+export function fetchMenufromDB(filterCategories: []): Promise<any[]> {
+  var query = 'SELECT * FROM menu' + (filterCategories.length>0 ? " WHERE category IN ('" + filterCategories.join("','") + "')" : '')
+  console.log(query)
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
-      tx.executeSql('SELECT * FROM menu', [], (tx, results) => {
+      tx.executeSql(query, [], (tx, results) => {
         var len = results.rows.length;
         const result = [];
         if (len > 0) {
@@ -42,23 +45,30 @@ export function fetchMenufromDB(): Promise<any[]> {
             result.push(item);
           }
         }
+        console.log(result)
         resolve(result);
       });
     }, (error) => {
-      console.log(error)
+      // console.log(error)
       reject(error)
     });
   });
 }
 export function setMenuToDB(data: any[]){
   var isError = false
+  console.log('setMenuToDB')
+  openDatabase()
   db.transaction((tx) => {
     for(var i=0; i< data.length; i++){
       if (isError) break;
-      tx.executeSql(`INSERT INTO menu (category,description,image,name,price) VALUES (${data[i].category},${data[i].description},${data[i].image},${data[i].name},${data[i].price})`
-        ,[]).catch((error) => {
-          isError = true
-          console.log(error)
+      console.log(data)
+      tx.executeSql(`INSERT INTO menu (category,description,image,name,price) VALUES (?,?,?,?,?)`
+        ,[data[i].category,data[i].description,data[i].image,data[i].name,data[i].price],
+        (tx,result) => {
+          console.log('Query completed', result.rowsAffected);
+        },(tx, error) => {
+          // this is the error callback
+          console.log('Query failed', error);
         })
     }
   })

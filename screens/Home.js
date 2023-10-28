@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View, FlatList } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View, FlatList, ImageBackground } from "react-native";
 import {fetchMenufromDB,setMenuToDB,openDatabase,closeDatabase} from '../src/Database'
 
 function Header({...props}) {
@@ -21,12 +21,15 @@ function Header({...props}) {
 export default Home= ({route,navigation}) => {
 
     const [menu, setMenu] = useState([])
+    const [selectedCategories, setSelectedCategories] = useState([])
+
     useEffect(() => {
         async function fetchData() {
           openDatabase();
           try {
             // Wait for the promise to resolve
-            const menuItems = await fetchMenufromDB();
+            const menuItems = await fetchMenufromDB(selectedCategories);
+            console.log(menuItems)
             if (menuItems.length === 0) {
               fetchMenuOnline();
             } else {
@@ -40,26 +43,73 @@ export default Home= ({route,navigation}) => {
         }
         // Call the async function
         fetchData();
-      }, []);
+      }, [selectedCategories]);
     const fetchMenuOnline = () => {
-        fetch('https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json')
-        .then(data => data.json())
-        .then(data=> {
-            setMenu(data.menu)
-            saveData(data.menu)
-        })
+        try{
+            fetch('https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json')
+            .then(data => data.json())
+            .then(data=> {
+                setMenu(data.menu)
+                saveData(data.menu)
+            })
+            .catch(error => console.log(error))
+        } catch(error) {
+            console.log(error)
+        }
     }
     const saveData = (data) => {
         setMenuToDB(data)
     }
+    const categories = ['starters','mains','desserts','starters','mains','desserts','starters','mains','desserts']
     return(
         <View style={{flex:1,backgroundColor:'white'}}>
             <Header onRequestProfile={() => navigation.navigate('Profile')}/>
-            <View style={{margin:10}}>
+            <View style={{width:'100%', backgroundColor:'#495E57'}}>
+                <ImageBackground source={require('../assets/images/Heroimage.png')} resizeMode="cover">
+                    <View style={{backgroundColor:'rgba(0,0,0,0.6)', padding:10}}>
+                        <Text style={{fontFamily:'MarkaziText-Regular', fontSize:42, color:'#F4CE14'}}>Little Lemon</Text>
+                        <Text style={{fontFamily:'Karla-Regular', fontSize:22, color:'white'}}>Chicago</Text>
+                        <Text style={{fontFamily: 'Karla-Meduim', fontSize:18, color:'white'}}>We are a family-owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.</Text>
+                    </View>
+                </ImageBackground>
+            </View>
+            <View style={{width:'100%', height:100}}>
+                <Text style={{fontSize:22,color:'black',margin:10,fontFamily:'Karla-Bold'}}>ORDER FOR DELIVERY!</Text>
                 <FlatList
+                    horizontal
+                    style={{width:'100%',marginVertical:5}}
+                    showsHorizontalScrollIndicator={false}
+                    data={categories}
+                    key={(item) => item.index}
+                    renderItem={(item)=> {
+                        const categoryName = item.item
+                        var itemIndex=-1;
+                        return(
+                            <Pressable onPress={()=>{
+                                var selCategoriesCopy = selectedCategories.slice()
+                                itemIndex = selCategoriesCopy.indexOf(categoryName)
+                                if (itemIndex >= 0){
+                                    selCategoriesCopy.splice(itemIndex,1)
+                                } else {
+                                    selCategoriesCopy.push(categoryName)
+                                }
+                                setSelectedCategories(selCategoriesCopy)
+                            }}>
+                                <View style={{backgroundColor:(selectedCategories.indexOf(categoryName) < 0 ? '#f2ecd3' : '#cca916'),marginHorizontal:5,padding:10, borderRadius:20,alignItems:'center',justifyContent:'center'}}>
+                                    <Text style={{fontSize:18, fontFamily:'Karla-Regular',includeFontPadding:false, color:(selectedCategories.indexOf(categoryName) < 0 ? '#cca916' : 'white')}}>{categoryName}</Text>
+                                </View>
+                            </Pressable>
+                        )
+                    }}
+                />
+            </View>
+            <View style={Styles.listSeparator}></View>
+            <View style={{margin:10}}>
+                <FlatList style={{height:'55%'}}
                     data={menu}
                     keyExtractor={(item) => item.index}
                     key={(item) => item.index}
+                    showsVerticalScrollIndicator={false}
                     ItemSeparatorComponent={ (props) => {
                         return (
                             <View key={props.leadingItem.name} style={Styles.listSeparator}></View>
