@@ -70,6 +70,9 @@ export default Home= ({route,navigation}) => {
                         <Text style={{fontFamily:'MarkaziText-Regular', fontSize:42, color:'#F4CE14'}}>Little Lemon</Text>
                         <Text style={{fontFamily:'Karla-Regular', fontSize:22, color:'white'}}>Chicago</Text>
                         <Text style={{fontFamily: 'Karla-Meduim', fontSize:18, color:'white'}}>We are a family-owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.</Text>
+                        <View style={{width:'95%',height:40, backgroundColor:'white', borderRadius:10,marginVertical:10}}>
+                            
+                        </View>
                     </View>
                 </ImageBackground>
             </View>
