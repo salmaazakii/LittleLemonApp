@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View, FlatList, ImageBackground } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View, FlatList, ImageBackground, TextInput } from "react-native";
 import {fetchMenufromDB,setMenuToDB,openDatabase,closeDatabase} from '../src/Database'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch'
 
 function Header({...props}) {
     return(
@@ -22,14 +24,14 @@ export default Home= ({route,navigation}) => {
 
     const [menu, setMenu] = useState([])
     const [selectedCategories, setSelectedCategories] = useState([])
+    const [searchText, setSearchText] = useState('')
 
     useEffect(() => {
         async function fetchData() {
           openDatabase();
           try {
             // Wait for the promise to resolve
-            const menuItems = await fetchMenufromDB(selectedCategories);
-            console.log(menuItems)
+            const menuItems = await fetchMenufromDB(selectedCategories,searchText);
             if (menuItems.length === 0) {
               fetchMenuOnline();
             } else {
@@ -43,7 +45,7 @@ export default Home= ({route,navigation}) => {
         }
         // Call the async function
         fetchData();
-      }, [selectedCategories]);
+      }, [selectedCategories,searchText]);
     const fetchMenuOnline = () => {
         try{
             fetch('https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json')
@@ -60,6 +62,12 @@ export default Home= ({route,navigation}) => {
     const saveData = (data) => {
         setMenuToDB(data)
     }
+    const handleSearch = (text) => {
+        setTimeout(() => {
+            setSearchText(text);
+        }, 500)
+      };
+
     const categories = ['starters','mains','desserts','starters','mains','desserts','starters','mains','desserts']
     return(
         <View style={{flex:1,backgroundColor:'white'}}>
@@ -70,8 +78,11 @@ export default Home= ({route,navigation}) => {
                         <Text style={{fontFamily:'MarkaziText-Regular', fontSize:42, color:'#F4CE14'}}>Little Lemon</Text>
                         <Text style={{fontFamily:'Karla-Regular', fontSize:22, color:'white'}}>Chicago</Text>
                         <Text style={{fontFamily: 'Karla-Meduim', fontSize:18, color:'white'}}>We are a family-owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.</Text>
-                        <View style={{width:'95%',height:40, backgroundColor:'white', borderRadius:10,marginVertical:10}}>
-                            
+                        <View style={{width:'95%',height:40, backgroundColor:'white', borderRadius:10,marginVertical:10, flexDirection:'row'}}>
+                            <View style={{margin: 10}}>
+                                <FontAwesomeIcon icon={faSearch} color='#495E57' size={18}/>
+                            </View>
+                            <TextInput style={Styles.textInput} placeholder="Search" value={searchText} onChangeText={handleSearch}/>
                         </View>
                     </View>
                 </ImageBackground>
@@ -108,7 +119,7 @@ export default Home= ({route,navigation}) => {
             </View>
             <View style={Styles.listSeparator}></View>
             <View style={{margin:10}}>
-                <FlatList style={{height:'55%'}}
+                <FlatList style={{height:'46%'}}
                     data={menu}
                     keyExtractor={(item) => item.index}
                     key={(item) => item.index}
@@ -172,4 +183,5 @@ const Styles = StyleSheet.create({
     , itemTitle:{color:'black',fontFamily:'Karla-Bold',fontSize:20, marginBottom:5}
     , itemDescription:{fontFamily:'Karla-Regular',fontSize:16}
     , itemPrice: {fontFamily:'Karla-Bold',fontSize:20,marginTop:5,fontWeight:'bold'}
+    , textInput:{fontSize:16, width:'80%'}
 });

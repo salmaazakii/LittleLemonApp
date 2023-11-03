@@ -24,9 +24,15 @@ export const closeDatabase = () => {
   }
 }
 
-export function fetchMenufromDB(filterCategories: []): Promise<any[]> {
-  var query = 'SELECT * FROM menu' + (filterCategories.length>0 ? " WHERE category IN ('" + filterCategories.join("','") + "')" : '')
-  console.log(query)
+export function fetchMenufromDB(filterCategories: [],filterName: string = ''): Promise<any[]> {
+  var filterQuery: string = ''
+  filterQuery = (filterCategories.length > 0 ? "category IN ('" + filterCategories.join("','") + "')" : '')
+  if (filterName !== ''){
+    filterQuery = (filterQuery === '' ? '' : ' AND ') + "name like '%" + filterName + "%'"
+  }
+
+  var query = 'SELECT * FROM menu' + (filterQuery === '' ? '' : ' WHERE ' + filterQuery)
+
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(query, [], (tx, results) => {
