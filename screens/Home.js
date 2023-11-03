@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View, FlatList, ImageBackground, TextInput } from "react-native";
-import {fetchMenufromDB,setMenuToDB,openDatabase,closeDatabase} from '../src/Database'
+import {fetchMenufromDB,fetchCategoriesfromDB,setMenuToDB,openDatabase,closeDatabase} from '../src/Database'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch'
 
@@ -23,6 +23,7 @@ function Header({...props}) {
 export default Home= ({route,navigation}) => {
 
     const [menu, setMenu] = useState([])
+    const [categories,setCategories] = useState([])
     const [selectedCategories, setSelectedCategories] = useState([])
     const [searchText, setSearchText] = useState('')
 
@@ -35,7 +36,9 @@ export default Home= ({route,navigation}) => {
             if (menuItems.length === 0) {
               fetchMenuOnline();
             } else {
-              setMenu(menuItems);
+                setMenu(menuItems);
+                const categories = await fetchCategoriesfromDB()
+                setCategories(categories)
             }
           } catch (error) {
             console.log(error);
@@ -53,6 +56,12 @@ export default Home= ({route,navigation}) => {
             .then(data=> {
                 setMenu(data.menu)
                 saveData(data.menu)
+
+                var categoriesSet = new Set()
+                data.menu.forEach((item) => {
+                    categoriesSet.add(item.category)
+                })
+                setCategories([...categoriesSet])
             })
             .catch(error => console.log(error))
         } catch(error) {
@@ -67,8 +76,7 @@ export default Home= ({route,navigation}) => {
             setSearchText(text);
         }, 500)
       };
-
-    const categories = ['starters','mains','desserts','starters','mains','desserts','starters','mains','desserts']
+    console.log(categories)
     return(
         <View style={{flex:1,backgroundColor:'white'}}>
             <Header onRequestProfile={() => navigation.navigate('Profile')}/>

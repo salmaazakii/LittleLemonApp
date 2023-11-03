@@ -47,7 +47,10 @@ class App extends React.Component {
             <Stack.Screen name={'Home'} component={Home} />
             <Stack.Screen name={'Profile'} component={Profile} />
             </>
-            : <Stack.Screen name={'Onboarding'} component={Onboarding} />
+            : <>
+              <Stack.Screen name={'Onboarding'} component={Onboarding} />
+              <Stack.Screen name={'Profile'} component={Profile} />
+            </>
           }
         </Stack.Navigator>
       }
